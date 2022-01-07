@@ -132,6 +132,8 @@ class AnimeClick:
                 genre.text.strip()
                 for genre in genres.find_next("dd").find_all("a")
             ]
+        if status := main.find(text="Stato in Italia"):
+            data['status'] = status.find_next("dd").text.strip()
         if overview := main.find("div", {"id": "trama-div"}):
             data["overview"] = overview.text.replace("Trama: ", "").strip()
         data["thumb"] = BASE_URL + main.find("img", {"alt": "copertina"})["src"]

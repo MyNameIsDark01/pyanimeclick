@@ -30,5 +30,6 @@ class Manga(BaseModel):
     category:       str = Field(default=None)
     year:           int = Field(default=None)
     thumb:          str = Field(default=None)
+    status:         str = Field(default=None)
     overview:       str = Field(default=None)
     genres:         List[str] = Field(default=[])
