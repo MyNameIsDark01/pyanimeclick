@@ -26,6 +26,8 @@ class Manga(BaseModel):
     original_title: str = Field(default=None)
     short_title:    str = Field(default=None)
     italian_name:   str = Field(default=None)
+    nationality:    str = Field(default=None)
+    category:       str = Field(default=None)
     year:           int = Field(default=None)
     thumb:          str = Field(default=None)
     overview:       str = Field(default=None)

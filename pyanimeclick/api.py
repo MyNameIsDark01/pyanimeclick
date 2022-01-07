@@ -121,6 +121,10 @@ class AnimeClick:
             data["short_title"] = short_title.find_next("span").text.strip()
         if italian_name := main.find("div", {"class": "page-header"}):
             data["italian_name"] = italian_name.find("h1").text
+        if nationatlity := main.find(text="Nazionalità"):
+            data['nationality'] = nationatlity.find_next("span").text.strip()
+        if category := main.find(text='Categoria'):
+            data['category'] = category.find_next('a').text.strip()
         if year := main.find(text="Anno"):
             data["year"] = int(year.find_next("dd").a.text.strip())
         if genres := main.find(text="Genere"):
