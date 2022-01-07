@@ -64,15 +64,15 @@ class AnimeClick:
         return [Result(**result) for result in results]
 
     async def get_anime(self, id: int) -> Anime:
-        r = await AnimeClick._make_request(
+        r = await self._make_request(
             "GET", ANIME_PAGE.format(str(id))
         )
         main = BeautifulSoup(r.text, "lxml")
-        r = await AnimeClick._make_request(
+        r = await self._make_request(
             "GET", ANIME_PAGE.format(str(id)) + "/staff"
         )
         staff = BeautifulSoup(r.text, "lxml")
-        r = await AnimeClick._make_request(
+        r = await self._make_request(
             "GET", ANIME_PAGE.format(str(id)) + "/episodi"
         )
         episodes = r.text
@@ -114,7 +114,7 @@ class AnimeClick:
         return Anime(**data)
     
     async def get_manga(self, id: int) -> Anime:
-        r = await AnimeClick._make_request(
+        r = await self._make_request(
             "GET", MANGA_PAGE.format(str(id))
         )
         main = BeautifulSoup(r.text, "lxml")
