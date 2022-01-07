@@ -11,8 +11,7 @@ from .types import *
 from .utils import *
 
 class AnimeClick:
-    def __init__(self):
-        self.http = httpx.AsyncClient()
+    http = httpx.AsyncClient()
         
     @classmethod
     async def _make_request(
