@@ -19,20 +19,21 @@ class AnimeClick:
         params: Dict=None,
     ) -> Optional[Response]:
         async with httpx.AsyncClient() as session:
-            r = await session.request(
+            async with session.request(
                 method=method,
                 url=url,
                 headers=headers(),
                 cookies=cookies(),
                 params=params,
                 follow_redirects=True
-            )
-        code = r.status_code
-        if code != 200:
-            raise RequestError(f"[{code}] {r.text}")
-        if "AnimeClick.it ....dove sei?!" in r.text:
-            raise InvalidCode(f"Il codice inserito non è valido.")
-        return r
+                ) as r:
+
+                code = r.status_code
+                if code != 200:
+                    raise RequestError(f"[{code}] {r.text}")
+                if "AnimeClick.it ....dove sei?!" in r.text:
+                    raise InvalidCode(f"Il codice inserito non è valido.")
+                return r
 
     async def search(self, query: str) -> List[Result]:
         r = await AnimeClick._make_request(
