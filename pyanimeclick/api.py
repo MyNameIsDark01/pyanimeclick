@@ -11,6 +11,9 @@ from .types import *
 from .utils import *
 
 class AnimeClick:
+    def __init__(self):
+        self.http = httpx.AsyncClient()
+        
     @classmethod
     async def _make_request(
         self,
@@ -18,25 +21,24 @@ class AnimeClick:
         url: str,
         params: Dict=None,
     ) -> Optional[Response]:
-        async with httpx.AsyncClient() as session:
-            async with session.request(
+        r = await self.http.request(
                 method=method,
                 url=url,
                 headers=headers(),
                 cookies=cookies(),
                 params=params,
                 follow_redirects=True
-                ) as r:
+            )
 
-                code = r.status_code
-                if code != 200:
-                    raise RequestError(f"[{code}] {r.text}")
-                if "AnimeClick.it ....dove sei?!" in r.text:
-                    raise InvalidCode(f"Il codice inserito non è valido.")
-                return r
+        code = r.status_code
+        if code != 200:
+            raise RequestError(f"[{code}] {r.text}")
+        if "AnimeClick.it ....dove sei?!" in r.text:
+            raise InvalidCode(f"Il codice inserito non è valido.")
+        return r
 
     async def search(self, query: str) -> List[Result]:
-        r = await AnimeClick._make_request(
+        r = await self._make_request(
             "GET", SEARCH_PAGE,
             params={"name": query}
         )
@@ -57,6 +59,8 @@ class AnimeClick:
             data["type"] = "manga" if body.find(text="tipo opera: Fumetto") else "anime"
             data["year"] = int(re.search(r"(\d{4})", body.find(text=re.compile("anno inizio:")).strip()).group(1))
             results.append(data)
+            
+        await self.http.aclose()
         return [Result(**result) for result in results]
 
     async def get_anime(self, id: int) -> Anime:
@@ -105,6 +109,8 @@ class AnimeClick:
         if len(durations) != 0:
             data["average_duration"] = int(sum(durations) // len(durations))
         data["thumb"] = BASE_URL + main.find("img", {"alt": "copertina"})["src"]
+        
+        await self.http.aclose()
         return Anime(**data)
     
     async def get_manga(self, id: int) -> Anime:
@@ -138,4 +144,6 @@ class AnimeClick:
         if overview := main.find("div", {"id": "trama-div"}):
             data["overview"] = overview.text.replace("Trama: ", "").strip()
         data["thumb"] = BASE_URL + main.find("img", {"alt": "copertina"})["src"]
+        
+        await self.http.aclose()
         return Manga(**data)
